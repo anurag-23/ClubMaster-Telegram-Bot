@@ -1,1 +1,1 @@
-web: gunicorn iecsebot:app
+web: gunicorn IECSEBot:app
