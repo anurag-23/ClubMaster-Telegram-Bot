@@ -1,7 +1,8 @@
 import os
 import requests
-from datetime import datetime
+import pytz
 
+from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -63,9 +64,13 @@ def bot_help():
 
 
 def upcoming():
-    event = Event.query.filter(Event.date >= datetime.now()).order_by(Event.date, Event.time).first()
-    app.logger.debug(event.date)
-    app.logger.debug(event.time)
+    cur_datetime = datetime.now(pytz.timezone('Asia/Kolkata'))
+    cur_date = cur_datetime.date()
+    cur_time = cur_datetime.time()
+    event = Event.query.filter(
+        (Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))).order_by(Event.date,
+                                                                                                  Event.time).first()
+
     if event is not None:
         return 'Upcoming Event:\n\n*' + event.name + '*\n' + event.description + '\n\n' + event.date.strftime(
             '%A, %B %d, %Y') + '\n' + event.time.strftime('%-I:%M %p') + '\n' + event.venue
@@ -74,7 +79,13 @@ def upcoming():
 
 
 def schedule():
-    events = Event.query.filter(Event.date >= datetime.now()).order_by(Event.date, Event.time).all()
+    cur_datetime = datetime.now(pytz.timezone('Asia/Kolkata'))
+    cur_date = cur_datetime.date()
+    cur_time = cur_datetime.time()
+    events = Event.query.filter(
+        (Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))).order_by(Event.date,
+                                                                                                  Event.time).all()
+
     if len(events) != 0:
         response = 'Schedule:'
         for event in events:
@@ -101,7 +112,7 @@ def create_event():
             return jsonify({'success': True, 'message': 'Success'}), 200
         except Exception as e:
             app.logger.error(repr(e))
-            return jsonify({'success': False, 'message': 'Event already exists'}), 400
+            return jsonify({'success': False, 'message': 'Error creating event.'}), 400
 
 
 @app.route('/events/', methods=['GET'])
@@ -111,8 +122,8 @@ def get_events():
     events_list = []
     for event in events:
         events_list.append(
-            {'eventName': event.name, 'eventDesc': event.description, 'date': str(event.date), 'time': str(event.time),
-             'venue': event.venue})
+            {'eventName': event.name, 'eventDesc': event.description, 'date': str(event.date),
+             'time': str(event.time), 'venue': event.venue})
     return jsonify({'schedule': events_list}), 200
 
 
@@ -140,7 +151,7 @@ def edit_event():
 @app.route('/events/remove', methods=['DELETE'])
 def del_event():
     try:
-        event = Event.query.filter_by(name=request.args.get('name'), date=request.args.get('date')).first()
+        event = Event.query.filter_by(name=request.args.get('eventName'), date=request.args.get('date')).first()
         if event is None:
             return jsonify({'success': False, 'message': 'Event not found'}), 400
 
