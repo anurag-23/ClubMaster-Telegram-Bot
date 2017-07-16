@@ -1,10 +1,14 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
 import os
+import requests
+
+from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
+ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
+BASE_URL = 'https://api.telegram.org/bot' + ACCESS_TOKEN
 
 
 class Event(db.Model):
@@ -23,6 +27,56 @@ class Event(db.Model):
 
     def __repr__(self):
         return '<Event %r %r %r>' % (self.name, self.date, self.time)
+
+
+@app.route('/bot', methods=['POST'])
+def run_bot():
+    try:
+        if request.args.get('ACCESS_TOKEN') != ACCESS_TOKEN:
+            return jsonify({}), 200
+
+        text = request.json['message']['text']
+        command = text[1:].split('@')[0]
+
+        options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming}
+        message = options[command[0]]()
+
+        data = {'chat_id': request.json['message']['chat']['id'], 'text': message}
+        requests.post(BASE_URL + '/sendMessage', data=data)
+        return jsonify({}), 200
+
+    except Exception as e:
+        app.logger.error(repr(e))
+        return jsonify({}), 200
+
+
+def start():
+    return 'Hi! IECSEBot keeps you updated about IECSE events.\n\nUse \help to get a list of available commands.'
+
+
+def bot_help():
+    return '- Use /schedule to get a list of all upcoming events.\n- Use /upcoming to get the next event.'
+
+
+def upcoming():
+    event = Event.query.order_by(Event.date, Event.time).first()
+    if event is not None:
+        return 'Upcoming Event:\n\n' + event.name + '\n' + event.description + '\n' + str(event.date) + ', ' + str(
+            event.time) + '\n' + event.venue
+    else:
+        return 'Sorry, there are no upcoming events.'
+
+
+def schedule():
+    events = Event.query.order_by(Event.date, Event.time).all()
+    if len(events) != 0:
+        response = 'Schedule:'
+        for event in events:
+            response += '\n\n' + event.name + '\n' + event.description + '\n' + str(event.date) + ', ' + str(
+                event.time) + '\n' + event.venue
+        return response
+    else:
+        return 'Sorry, there are no upcoming events.'
 
 
 @app.route('/events/create', methods=['POST'])
