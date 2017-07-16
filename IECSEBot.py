@@ -65,7 +65,7 @@ def upcoming():
     event = Event.query.order_by(Event.date, Event.time).first()
     if event is not None:
         return 'Upcoming Event:\n\n*' + event.name + '*\n' + event.description + '\n\n' + event.date.strftime(
-            '%A, %B %d, %Y') + ' ' + event.time.strftime('%-I:%M %p') + '\n' + event.venue
+            '%A, %B %d, %Y') + '\n' + event.time.strftime('%-I:%M %p') + '\n' + event.venue
     else:
         return 'Sorry, there are no upcoming events.'
 
@@ -76,7 +76,7 @@ def schedule():
         response = 'Schedule:'
         for event in events:
             response += '\n\n*' + event.name + '*\n' + event.description + '\n\n' + event.date.strftime(
-                '%A, %B %d, %Y') + ' ' + event.time.strftime('%-I:%M %p') + '\n' + event.venue
+                '%A, %B %d, %Y') + '\n' + event.time.strftime('%-I:%M %p') + '\n' + event.venue
         return response
     else:
         return 'Sorry, there are no upcoming events.'
