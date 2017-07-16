@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 ACCESS_TOKEN = str(os.environ.get('ACCESS_TOKEN'))
 BASE_URL = 'https://api.telegram.org/bot' + ACCESS_TOKEN
-BOARD_ID = os.environ.get('BOARD_ID')
+BOARD_ID = -221896364
 
 
 class Event(db.Model):
