@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 ACCESS_TOKEN = str(os.environ.get('ACCESS_TOKEN'))
 BASE_URL = 'https://api.telegram.org/bot' + ACCESS_TOKEN
-BOARD_ID = -221896364
+BOARD_ID = str(os.environ.get('BOARD_ID'))
 
 
 class Event(db.Model):
@@ -102,7 +102,7 @@ def schedule():
 
 
 def create(chat_id, command):
-    if chat_id != BOARD_ID:
+    if str(chat_id) != BOARD_ID:
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
