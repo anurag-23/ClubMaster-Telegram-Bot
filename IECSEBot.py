@@ -1,5 +1,6 @@
 import os
 import requests
+from datetime import datetime
 
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
@@ -62,7 +63,9 @@ def bot_help():
 
 
 def upcoming():
-    event = Event.query.order_by(Event.date, Event.time).first()
+    event = Event.query.filter(Event.date >= datetime.now()).order_by(Event.date, Event.time).first()
+    app.logger.debug(event.date)
+    app.logger.debug(event.time)
     if event is not None:
         return 'Upcoming Event:\n\n*' + event.name + '*\n' + event.description + '\n\n' + event.date.strftime(
             '%A, %B %d, %Y') + '\n' + event.time.strftime('%-I:%M %p') + '\n' + event.venue
@@ -71,7 +74,7 @@ def upcoming():
 
 
 def schedule():
-    events = Event.query.order_by(Event.date, Event.time).all()
+    events = Event.query.filter(Event.date >= datetime.now()).order_by(Event.date, Event.time).all()
     if len(events) != 0:
         response = 'Schedule:'
         for event in events:
