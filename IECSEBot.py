@@ -102,7 +102,7 @@ def schedule():
 
 
 def create(chat_id, command):
-    if chat_id != -207087551:
+    if chat_id != BOARD_ID:
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
