@@ -51,7 +51,7 @@ def run_bot():
 
 
 def start():
-    return 'Hi! IECSEBot keeps you updated about IECSE events.\n\nUse \help to get a list of available commands.'
+    return 'Hi! IECSEBot keeps you updated about IECSE events.\n\nUse /help to get a list of available commands.'
 
 
 def bot_help():
@@ -79,6 +79,7 @@ def schedule():
         return 'Sorry, there are no upcoming events.'
 
 
+@app.route('/events/create/', methods=['POST'])
 @app.route('/events/create', methods=['POST'])
 def create_event():
     creq = request.json
@@ -97,6 +98,7 @@ def create_event():
             return jsonify({'success': False, 'message': 'Event already exists'}), 400
 
 
+@app.route('/events/', methods=['GET'])
 @app.route('/events', methods=['GET'])
 def get_events():
     events = Event.query.all()
@@ -108,6 +110,7 @@ def get_events():
     return jsonify({'schedule': events_list}), 200
 
 
+@app.route('/events/edit/', methods=['PUT'])
 @app.route('/events/edit', methods=['PUT'])
 def edit_event():
     ereq = request.json
@@ -127,6 +130,7 @@ def edit_event():
         return jsonify({'success': False, 'message': 'Error, bad request'}), 400
 
 
+@app.route('/events/remove/', methods=['DELETE'])
 @app.route('/events/remove', methods=['DELETE'])
 def del_event():
     try:
