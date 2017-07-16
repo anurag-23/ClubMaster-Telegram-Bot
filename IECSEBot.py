@@ -11,6 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 ACCESS_TOKEN = str(os.environ.get('ACCESS_TOKEN'))
 BASE_URL = 'https://api.telegram.org/bot' + ACCESS_TOKEN
+BOARD_ID = os.environ.get('BOARD_ID')
 
 
 class Event(db.Model):
@@ -38,12 +39,16 @@ def run_bot():
             return jsonify({}), 200
 
         text = request.json['message']['text']
+        chat_id = request.json['message']['chat']['id']
         command = text[1:].split('@')[0]
 
-        options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming}
-        message = options[command]()
+        if 'create' in command:
+            message = create(chat_id, command)
+        else:
+            options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming}
+            message = options[command]()
 
-        data = {'chat_id': request.json['message']['chat']['id'], 'text': message}
+        data = {'chat_id': chat_id, 'text': message}
         if command != 'start':
             data['parse_mode'] = 'markdown'
 
@@ -96,6 +101,29 @@ def schedule():
         return 'Sorry, there are no upcoming events.'
 
 
+def create(chat_id, command):
+    if chat_id != -207087551:
+        return 'Sorry, you don\'t have authorization for this action.'
+    else:
+        command = command.split(' ')
+        if len(command) == 1:
+            return 'Create an event by using the /create command in this format:\n\n' + \
+                   '_/create <name> <description> <date> <time> <venue>_\n\n<name> - Event name\n' + \
+                   '<description> - Event description\n<date> - Event date in dd/MM/yyyy\n' + \
+                   '<time> - Event time in hh:mm am/pm\n<venue> - Event venue'
+        else:
+            try:
+                event = Event(command[1], command[2], command[3], command[4], command[5])
+                db.session.add(event)
+                db.session.commit()
+                return 'Event created succesfully.'
+            except Exception as e:
+                app.logger.error(repr(e))
+                return 'Insufficient or invalid arguments passed with /create command.\n' + \
+                       'Use /create to know how to pass arguments'
+
+
+# API code below
 @app.route('/events/create/', methods=['POST'])
 @app.route('/events/create', methods=['POST'])
 def create_event():
