@@ -24,7 +24,7 @@ class Event(db.Model):
     def __init__(self, name, description, date, time, venue):
         self.name = name
         self.description = description
-        self.date = date
+        self.date = datetime.strptime(date, '%d/%m/%Y')
         self.time = time
         self.venue = venue
 
@@ -109,12 +109,12 @@ def create(chat_id, command):
         if len(command) == 1:
             return 'Create an event by using the /create command in this format:\n\n' + \
                    '/create | name | description | date | time | venue\n\n*name*\nEvent name\n\n' + \
-                   '_description_\nEvent description\n\n_date_\nEvent date in dd/MM/yyyy\n\n' + \
-                   '_time_\nEvent time in hh:mm am/pm\n\n_venue_\nEvent venue'
+                   '*description*\nEvent description\n\n*date*\nEvent date in dd/MM/yyyy\n\n' + \
+                   '*time*\nEvent time in hh:mm am/pm\n\n*venue*\nEvent venue'
         else:
             try:
-                event_date = datetime.strptime(command[3], '%d-%m-%Y')
-                event_time = datetime.strptime(command[4], '%I:%M %p')
+                event_date = datetime.strptime(command[3], '%d/%m/%Y').date()
+                event_time = datetime.strptime(command[4], '%I:%M %p').time()
                 cur_datetime = datetime.now(pytz.timezone('Asia/Kolkata'))
                 cur_date = cur_datetime.date()
                 cur_time = cur_datetime.time()
