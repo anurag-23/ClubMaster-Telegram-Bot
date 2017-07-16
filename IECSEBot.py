@@ -121,7 +121,7 @@ def create(chat_id, command):
                 if (event_date < cur_date) | ((event_date == cur_date) & (event_time < cur_time)):
                     return 'I wish I was a time machine, so I could create events in the past.'
 
-                event = Event(command[1], command[2], event_date, event_time, command[5])
+                event = Event(command[1], command[2], command[3], command[4], command[5])
                 db.session.add(event)
                 db.session.commit()
                 return 'Event created successfully.'
