@@ -113,14 +113,14 @@ def create(chat_id, command):
                    '_time_\nEvent time in hh:mm am/pm\n\n_venue_\nEvent venue'
         else:
             try:
-                event_date = datetime.strptime(command[3], '%m-%d-%Y')
+                event_date = datetime.strptime(command[3], '%d-%m-%Y')
                 event_time = datetime.strptime(command[4], '%I:%M %p')
                 cur_datetime = datetime.now(pytz.timezone('Asia/Kolkata'))
                 cur_date = cur_datetime.date()
                 cur_time = cur_datetime.time()
                 if (event_date < cur_date) | ((event_date == cur_date) & (event_time < cur_time)):
                     return 'I wish I was a time machine, so I could create events in the past.'
-                
+
                 event = Event(command[1], command[2], event_date, event_time, command[5])
                 db.session.add(event)
                 db.session.commit()
