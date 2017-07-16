@@ -108,12 +108,20 @@ def create(chat_id, command):
         command = command.split(' | ')
         if len(command) == 1:
             return 'Create an event by using the /create command in this format:\n\n' + \
-                   '_/create | name | description | date | time | venue_\n\n_name_\nEvent name\n\n' + \
+                   '/create | name | description | date | time | venue\n\n*name*\nEvent name\n\n' + \
                    '_description_\nEvent description\n\n_date_\nEvent date in dd/MM/yyyy\n\n' + \
                    '_time_\nEvent time in hh:mm am/pm\n\n_venue_\nEvent venue'
         else:
             try:
-                event = Event(command[1], command[2], command[3], command[4], command[5])
+                event_date = datetime.strptime(command[3], '%m-%d-%Y')
+                event_time = datetime.strptime(command[4], '%I:%M %p')
+                cur_datetime = datetime.now(pytz.timezone('Asia/Kolkata'))
+                cur_date = cur_datetime.date()
+                cur_time = cur_datetime.time()
+                if (event_date < cur_date) | ((event_date == cur_date) & (event_time < cur_time)):
+                    return 'I wish I was a time machine, so I could create events in the past.'
+                
+                event = Event(command[1], command[2], event_date, event_time, command[5])
                 db.session.add(event)
                 db.session.commit()
                 return 'Event created successfully.'
