@@ -41,7 +41,7 @@ def run_bot():
         options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming}
         message = options[command]()
 
-        data = {'chat_id': request.json['message']['chat']['id'], 'text': message}
+        data = {'chat_id': request.json['message']['chat']['id'], 'text': message, 'parse_mode': 'markdown'}
         requests.post(BASE_URL + '/sendMessage', data=data)
         return jsonify({}), 200
 
@@ -51,7 +51,7 @@ def run_bot():
 
 
 def start():
-    return 'Hi! IECSEBot keeps you updated about IECSE events.\n\nUse /help to get a list of available commands.'
+    return 'Hi! @IECSE_Bot keeps you updated about IECSE events.\n\nUse /help to get a list of available commands.'
 
 
 def bot_help():
@@ -61,7 +61,7 @@ def bot_help():
 def upcoming():
     event = Event.query.order_by(Event.date, Event.time).first()
     if event is not None:
-        return 'Upcoming Event:\n\n' + event.name + '\n' + event.description + '\n' + str(event.date) + ', ' + str(
+        return 'Upcoming Event:\n\n*' + event.name + '*\n_' + event.description + '_\n' + str(event.date) + ', ' + str(
             event.time) + '\n' + event.venue
     else:
         return 'Sorry, there are no upcoming events.'
@@ -72,7 +72,7 @@ def schedule():
     if len(events) != 0:
         response = 'Schedule:'
         for event in events:
-            response += '\n\n' + event.name + '\n' + event.description + '\n' + str(event.date) + ', ' + str(
+            response += '\n\n*' + event.name + '*\n_' + event.description + '_\n' + str(event.date) + ', ' + str(
                 event.time) + '\n' + event.venue
         return response
     else:
