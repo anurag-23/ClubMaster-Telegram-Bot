@@ -39,7 +39,7 @@ def run_bot():
         command = text[1:].split('@')[0]
 
         options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming}
-        message = options[command[0]]()
+        message = options[command]()
 
         data = {'chat_id': request.json['message']['chat']['id'], 'text': message}
         requests.post(BASE_URL + '/sendMessage', data=data)
