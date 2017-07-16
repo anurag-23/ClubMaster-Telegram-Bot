@@ -119,7 +119,8 @@ def create(chat_id, command):
                 cur_date = cur_datetime.date()
                 cur_time = cur_datetime.time()
                 if (event_date < cur_date) | ((event_date == cur_date) & (event_time < cur_time)):
-                    return 'I wish I was a time machine, so I could create events in the past.'
+                    return 'Sorry, I wish I was The Flash, so I could have messed with the timeline.\n' + \
+                           'Please specify a date that\'s not in the past.'
 
                 event = Event(command[1], command[2], command[3], command[4], command[5])
                 db.session.add(event)
