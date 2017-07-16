@@ -105,22 +105,22 @@ def create(chat_id, command):
     if chat_id != -207087551:
         return 'Sorry, you don\'t have authorization for this action.'
     else:
-        command = command.split(' ')
+        command = command.split(' | ')
         if len(command) == 1:
             return 'Create an event by using the /create command in this format:\n\n' + \
-                   '_/create <name> <description> <date> <time> <venue>_\n\n<name> - Event name\n' + \
-                   '<description> - Event description\n<date> - Event date in dd/MM/yyyy\n' + \
-                   '<time> - Event time in hh:mm am/pm\n<venue> - Event venue'
+                   '_/create | name | description | date | time | venue_\n\n_name_\nEvent name\n\n' + \
+                   '_description_\nEvent description\n\n_date_\nEvent date in dd/MM/yyyy\n\n' + \
+                   '_time_\nEvent time in hh:mm am/pm\n\n_venue_\nEvent venue'
         else:
             try:
                 event = Event(command[1], command[2], command[3], command[4], command[5])
                 db.session.add(event)
                 db.session.commit()
-                return 'Event created succesfully.'
+                return 'Event created successfully.'
             except Exception as e:
                 app.logger.error(repr(e))
-                return 'Insufficient or invalid arguments passed with /create command.\n' + \
-                       'Use /create to know how to pass arguments'
+                return 'Insufficient or invalid arguments passed with /create command.\n\n' + \
+                       'Use /create to know how to pass arguments.'
 
 
 # API code below
