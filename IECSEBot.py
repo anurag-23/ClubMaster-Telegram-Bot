@@ -147,7 +147,8 @@ def edit(chat_id, command):
                    '*Note:* You cannot edit the *name* or *date* of the event.'
         else:
             try:
-                event = Event.query.filter_by(name=command[1], date=command[3]).first()
+                event_date = datetime.strptime(command[3], '%d/%m/%Y').date()
+                event = Event.query.filter_by(name=command[1], date=event_date).first()
                 if event is None:
                     return 'Event not found.'
                 else:
