@@ -49,7 +49,7 @@ def run_bot():
         elif 'delete' in command:
             message = delete(chat_id, command)
         else:
-            options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming}
+            options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming, 'about': about}
             message = options[command]()
 
         data = {'chat_id': chat_id, 'text': message}
@@ -69,7 +69,8 @@ def start():
 
 
 def bot_help():
-    return '- Use /schedule to get a list of all upcoming events.\n- Use /upcoming to get the next event.'
+    return '- Use /schedule to get a list of all upcoming events.\n- Use /upcoming to get the next event.\n' + \
+           '- Use /about to know more about IECSE.'
 
 
 def upcoming():
@@ -172,7 +173,7 @@ def delete(chat_id, command):
         command = command.split(' | ')
         if len(command) == 1:
             return 'Delete an event by using the /delete command in this format:\n\n' + \
-                   '/delete | name | date\n\n*name*\nEvent name\n\nEvent date in dd/MM/yyyy'
+                   '/delete | name | date\n\n*name*\nEvent name\n\n*date*\nEvent date in dd/MM/yyyy'
         else:
             try:
                 event_date = datetime.strptime(command[2], '%d/%m/%Y').date()
@@ -187,6 +188,13 @@ def delete(chat_id, command):
                 app.logger.error(repr(e))
                 return 'Insufficient or invalid arguments passed with /delete command.\n\n' + \
                        'Use /delete to know how to pass arguments.'
+
+
+def about():
+    return '*IECSE* is the official club of the Department of Computer Science & Engineering of' + \
+           'Manipal Institute of Technology. The club conducts a number of events related to the field of' + \
+           'Computer Science comprising of workshops, open-talks, and competitions.\n\n' + \
+           '*IECSE on the web:*\niecsemanipal.com\nfb.com/iecsemanipal'
 
 
 # API code below
