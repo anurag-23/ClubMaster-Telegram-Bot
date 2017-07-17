@@ -44,6 +44,8 @@ def run_bot():
 
         if 'create' in command:
             message = create(chat_id, command)
+        elif 'edit' in command:
+            message = edit(chat_id, command)
         else:
             options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming}
             message = options[command]()
@@ -102,7 +104,7 @@ def schedule():
 
 
 def create(chat_id, command):
-    if str(chat_id) != BOARD_ID:
+    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551):
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
@@ -130,6 +132,34 @@ def create(chat_id, command):
                 app.logger.error(repr(e))
                 return 'Insufficient or invalid arguments passed with /create command.\n\n' + \
                        'Use /create to know how to pass arguments.'
+
+
+def edit(chat_id, command):
+    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551):
+        return 'Sorry, you don\'t have authorization for this action.'
+    else:
+        command = command.split(' | ')
+        if len(command) == 1:
+            return 'Edit an event by using the /edit command in this format:\n\n' + \
+                   '/edit | name | description | date | time | venue\n\n*name*\nEvent name\n\n' + \
+                   '*description*\nNew event description\n\n*date*\nEvent date in dd/MM/yyyy\n\n' + \
+                   '*time*\nNew event time in hh:mm am/pm\n\n*venue*\nNew event venue\n\n' + \
+                   '*Note:* You cannot edit the *name* or *date* of the event.'
+        else:
+            try:
+                event = Event.query.filter_by(name=command[1], date=command[3]).first()
+                if event is None:
+                    return 'Event not found.'
+                else:
+                    event.description = command[2]
+                    event.time = command[4]
+                    event.venue = command[5]
+                    db.session.commit()
+                    return 'Event successfully edited.'
+            except Exception as e:
+                app.logger.error(repr(e))
+                return 'Insufficient or invalid arguments passed with /edit command.\n\n' + \
+                       'Use /edit to know how to pass arguments.'
 
 
 # API code below
