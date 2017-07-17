@@ -46,6 +46,8 @@ def run_bot():
             message = create(chat_id, command)
         elif 'edit' in command:
             message = edit(chat_id, command)
+        elif 'delete' in command:
+            message = delete(chat_id, command)
         else:
             options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming}
             message = options[command]()
@@ -161,6 +163,30 @@ def edit(chat_id, command):
                 app.logger.error(repr(e))
                 return 'Insufficient or invalid arguments passed with /edit command.\n\n' + \
                        'Use /edit to know how to pass arguments.'
+
+
+def delete(chat_id, command):
+    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551):
+        return 'Sorry, you don\'t have authorization for this action.'
+    else:
+        command = command.split(' | ')
+        if len(command) == 1:
+            return 'Delete an event by using the /delete command in this format:\n\n' + \
+                   '/delete | name | date\n\n*name*\nEvent name\n\nEvent date in dd/MM/yyyy'
+        else:
+            try:
+                event_date = datetime.strptime(command[3], '%d/%m/%Y').date()
+                event = Event.query.filter_by(name=command[1], date=event_date).first()
+                if event is None:
+                    return 'Event not found.'
+                else:
+                    db.session.delete(event)
+                    db.session.commit()
+                    return 'Event successfully deleted.'
+            except Exception as e:
+                app.logger.error(repr(e))
+                return 'Insufficient or invalid arguments passed with /delete command.\n\n' + \
+                       'Use /delete to know how to pass arguments.'
 
 
 # API code below
