@@ -175,7 +175,7 @@ def delete(chat_id, command):
                    '/delete | name | date\n\n*name*\nEvent name\n\nEvent date in dd/MM/yyyy'
         else:
             try:
-                event_date = datetime.strptime(command[3], '%d/%m/%Y').date()
+                event_date = datetime.strptime(command[2], '%d/%m/%Y').date()
                 event = Event.query.filter_by(name=command[1], date=event_date).first()
                 if event is None:
                     return 'Event not found.'
