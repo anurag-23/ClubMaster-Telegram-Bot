@@ -191,8 +191,8 @@ def delete(chat_id, command):
 
 
 def about():
-    return '*IECSE* is the official club of the Department of Computer Science & Engineering of' + \
-           'Manipal Institute of Technology. The club conducts a number of events related to the field of' + \
+    return '*IECSE* is the official club of the Department of Computer Science & Engineering of ' + \
+           'Manipal Institute of Technology. The club conducts a number of events related to the field of ' + \
            'Computer Science comprising of workshops, open-talks, and competitions.\n\n' + \
            '*IECSE on the web:*\niecsemanipal.com\nfb.com/iecsemanipal'
 
