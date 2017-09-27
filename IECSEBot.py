@@ -12,7 +12,10 @@ db = SQLAlchemy(app)
 ACCESS_TOKEN = str(os.environ.get('ACCESS_TOKEN'))
 BASE_URL = 'https://api.telegram.org/bot' + ACCESS_TOKEN
 BOARD_ID = str(os.environ.get('BOARD_ID'))
-
+BOARD_PM_LIST = [-207087551,441083883]
+SUPER_GROUP_ID = -1001110587717
+MCB_GROUP_ID = -1001110149589
+BOARD_GROUP_ID = -1001110922283
 
 class Event(db.Model):
     name = db.Column(db.VARCHAR, primary_key=True)
@@ -20,6 +23,7 @@ class Event(db.Model):
     date = db.Column(db.DATE, primary_key=True)
     time = db.Column(db.TIME)
     venue = db.Column(db.VARCHAR)
+    event_type = db.Column(db.INTEGER)
 
     def __init__(self, name, description, date, time, venue):
         self.name = name
@@ -41,15 +45,23 @@ def run_bot():
         text = request.json['message']['text']
         chat_id = request.json['message']['chat']['id']
         command = text[1:].split('@')[0]
-
+        privilege_level = 0
+        if chat_id == MCB_GROUP_ID :
+        	privilege_level = 2
+        elif chat_id == BOARD_GROUP_ID or chat_id in BOARD_PM_LIST:
+        	privilege_level = 3
         if 'create' in command:
             message = create(chat_id, command)
         elif 'edit' in command:
             message = edit(chat_id, command)
         elif 'delete' in command:
             message = delete(chat_id, command)
+        elif 'upcoming' in command:
+        	message = upcoming(privilege_level)
+        elif 'schedule' in command:
+        	message = schedule(privilege_level)
         else:
-            options = {'start': start, 'help': bot_help, 'schedule': schedule, 'upcoming': upcoming, 'about': about}
+            options = {'start': start, 'help': bot_help, 'about': about}
             message = options[command]()
 
         data = {'chat_id': chat_id, 'text': message}
@@ -73,12 +85,13 @@ def bot_help():
            '- Use /about to know more about IECSE.'
 
 
-def upcoming():
+def upcoming(privilege_level):
+
     cur_datetime = datetime.now(pytz.timezone('Asia/Kolkata'))
     cur_date = cur_datetime.date()
     cur_time = cur_datetime.time()
     event = Event.query.filter(
-        (Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))).order_by(Event.date,
+        ((Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))) & Event.event_type <= privilege_level).order_by(Event.date,
                                                                                                   Event.time).first()
 
     if event is not None:
@@ -88,12 +101,12 @@ def upcoming():
         return 'Sorry, there are no upcoming events.'
 
 
-def schedule():
+def schedule(privilege_level):
     cur_datetime = datetime.now(pytz.timezone('Asia/Kolkata'))
     cur_date = cur_datetime.date()
     cur_time = cur_datetime.time()
     events = Event.query.filter(
-        (Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))).order_by(Event.date,
+        ((Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))) & Event.event_type <= privilege_level).order_by(Event.date,
                                                                                                   Event.time).all()
 
     if len(events) != 0:
@@ -107,7 +120,7 @@ def schedule():
 
 
 def create(chat_id, command):
-    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551 and chat_id!=441083883):
+    if (str(chat_id) != BOARD_ID) & (chat_id not in BOARD_PM_LIST):
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
@@ -138,7 +151,7 @@ def create(chat_id, command):
 
 
 def edit(chat_id, command):
-    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551 and chat_id!=441083883):
+    if (str(chat_id) != BOARD_ID) & (chat_id not in BOARD_PM_LIST):
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
@@ -167,7 +180,7 @@ def edit(chat_id, command):
 
 
 def delete(chat_id, command):
-    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551 and chat_id!=441083883):
+    if (str(chat_id) != BOARD_ID) & (chat_id not in BOARD_PM_LIST):
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
