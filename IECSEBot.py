@@ -16,7 +16,7 @@ BOARD_PM_LIST = [-207087551,441083883]
 SUPER_GROUP_ID = -1001110587717
 MCB_GROUP_ID = -1001110149589
 BOARD_GROUP_ID = -1001110922283
-
+TESTING_BOTS = -207087551
 class Event(db.Model):
     name = db.Column(db.VARCHAR, primary_key=True)
     description = db.Column(db.VARCHAR)
@@ -50,6 +50,8 @@ def run_bot():
         	privilege_level = 2
         elif chat_id == BOARD_GROUP_ID or chat_id in BOARD_PM_LIST:
         	privilege_level = 3
+        elif chat_id == TESTING_BOTS :
+        	privilege_level = 1
         if 'create' in command:
             message = create(chat_id, command)
         elif 'edit' in command:
