@@ -93,7 +93,7 @@ def upcoming(privilege_level):
     cur_date = cur_datetime.date()
     cur_time = cur_datetime.time()
     event = Event.query.filter(
-        ((Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))) & Event.event_type <= privilege_level).order_by(Event.date,
+        ((Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))) & (Event.event_type <= privilege_level)).order_by(Event.date,
                                                                                                   Event.time).first()
 
     if event is not None:
@@ -108,7 +108,7 @@ def schedule(privilege_level):
     cur_date = cur_datetime.date()
     cur_time = cur_datetime.time()
     events = Event.query.filter(
-        ((Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))) & Event.event_type <= privilege_level).order_by(Event.date,
+        ((Event.date > cur_date) | ((Event.date == cur_date) & (Event.time >= cur_time))) & (Event.event_type <= privilege_level)).order_by(Event.date,
                                                                                                   Event.time).all()
 
     if len(events) != 0:
