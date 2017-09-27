@@ -107,7 +107,7 @@ def schedule():
 
 
 def create(chat_id, command):
-    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551):
+    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551 and chat_id!=441083883):
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
@@ -138,7 +138,7 @@ def create(chat_id, command):
 
 
 def edit(chat_id, command):
-    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551):
+    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551 and chat_id!=441083883):
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
@@ -167,7 +167,7 @@ def edit(chat_id, command):
 
 
 def delete(chat_id, command):
-    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551):
+    if (str(chat_id) != BOARD_ID) & (chat_id != -207087551 and chat_id!=441083883):
         return 'Sorry, you don\'t have authorization for this action.'
     else:
         command = command.split(' | ')
@@ -268,3 +268,5 @@ def del_event():
 
 if __name__ == '__main__':
     app.run()
+
+#441083883
