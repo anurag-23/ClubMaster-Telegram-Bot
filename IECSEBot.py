@@ -12,7 +12,7 @@ db = SQLAlchemy(app)
 ACCESS_TOKEN = str(os.environ.get('ACCESS_TOKEN'))
 BASE_URL = 'https://api.telegram.org/bot' + ACCESS_TOKEN
 BOARD_ID = str(os.environ.get('BOARD_ID'))
-BOARD_PM_LIST = [441083883]
+BOARD_PM_LIST = [441083883,429899091,438683844,399729910,408947734,360600716,374731221,394175182]
 SUPER_GROUP_ID = -1001110587717
 MCB_GROUP_ID = -1001110149589
 BOARD_GROUP_ID = -1001110922283
@@ -284,4 +284,11 @@ def del_event():
 if __name__ == '__main__':
     app.run()
 
-#441083883
+#441083883 - Sai
+#429899091 - Anurag
+#438683844 - Prashanth
+#399729910 - Aditi
+#408947734 - Agrawal
+#360600716 - Mehul
+#374731221 - Akhil
+#394175182 - Walia
